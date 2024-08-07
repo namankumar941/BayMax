@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Edit Personal Info</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class = "container mt-4">    
+        <div class="mb-3">
+            <a class="edit link mb-3"  href="/userEdit/view/<%= userDetails.userId %>" role="button" aria-expanded="false">
+                <img src="<%= userDetails.profileImageURL %>"  alt="Image" style="width: 125px; height: 100px;">
+            </a>
+            <div> 
+                <p> name : <%= userDetails.name %>  </p> 
+            </div>
+            <div>
+                <% if (userDetails.email) { %>
+                    <p>email : <%= userDetails.email %></p>
+                                     
+                <% } %>
+            </div>
+            <div>
+                <% if (userDetails.age) { %>
+                    <p>age : <%= userDetails.age %></p>
+                                     
+                <% } %>
+            </div>
+            <div>
+                <% if (userDetails.phoneNumber) { %>
+                    <p>phoneNumber: <%= userDetails.phoneNumber %></p>
+                                     
+                <% } %>
+            </div> 
+            
+            <a class="edit link mb-3"  href="/userEdit/<%= userDetails.userId %>" role="button" aria-expanded="false">
+                <p>Edit user Info</p>
+            </a>
+        </div>
+        
+        <div>
+            <a class="edit link mb-3"  href="/documents/<%= userDetails.userId %>" role="button" aria-expanded="false">
+                <p>Reports</p>
+            </a>
+        </div>
+
+        <div>
+            <a class="edit link mb-3"  href="#" role="button" aria-expanded="false">
+                <p>Detailed Report</p>
+            </a>
+        </div>
+     
+    <%- include('./partials/scripts') %>
+</body>
+</html>

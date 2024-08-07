@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Edit Personal Info</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class="container mt-4">
+        <img src="<%= editUser.profileImageURL %>" alt="Image" style="width: 125px; height: 100px;">
+        <p><%= editUser.name %></p>
+    </div>
+    
+    <div class="container mt-3" >
+        <form action="/userEdit/image/<%= editUser.userId %>" method = "post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="profileImage" class="form-label">profile Image</label>
+                <input type="file" 
+                required
+                class="form-control" 
+                id="profileImageURL" 
+                name="profileImage" 
+                aria-describedby="profileImageURL">
+            </div>
+
+            <div class="mb-3">
+                <button class="btn btn-primary">Submit</button>
+             </div>
+
+        </form>
+    </div>
+   
+    <%- include('./partials/scripts') %>
+</body>
+</html>

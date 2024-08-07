@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home Page</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class = "container mt-4">    
+        <div class="mb-3">
+            <a class="edit link mb-3"  href="/memberEdit/view/<%=  %>" role="button" aria-expanded="false">
+                <img src="<%= docOwner.profileImageURL %>"  alt="Image" style="width: 125px; height: 100px;">
+            </a>
+        </div>
+
+        <div class="mb-3">
+            <%= docOwner.name %>
+            
+        </div>                
+    </div> 
+
+
+    <div class="mb-3">
+        <a class="nav-link" href="/documents/add/<%= docOwner.userId %>">Add Report</a>        
+               
+     </div>
+
+     <% if (locals.doc[0]) { %>
+        <% doc.forEach(document => { %>
+            <div class="col">
+                <div class="card col" style="width: 18rem;">
+                    <a class="nav-link " href="/documents/viewReport/<%= document.documentId %>" role="button"  aria-expanded="false">
+                        <p><%= document.dateOfReport %></p>
+                      </a>
+                                                               
+                  </div>
+                </div>
+         
+        <% }) %>     
+     <% } %>
+
+    <%- include('./partials/scripts') %>
+</body>
+</html>

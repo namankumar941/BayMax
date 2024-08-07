@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Edit Personal Info</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class = "container mt-4">    
+        <div class="mb-3">
+            <a class="edit link mb-3"  href="/userEdit/view/<%= userView.userId %>" role="button" aria-expanded="false">
+                <img src="<%= userView.profileImageURL %>"  alt="Image" style="width: 125px; height: 100px;">
+            </a>
+            
+            <a class="edit link mb-3"  href="/userEdit/image/<%= userView.userId %>" role="button" aria-expanded="false">
+                <p>Edit </p>
+            </a>
+        </div>
+
+        <div class="mb-3">
+            <p> name : <%= userView.name %>  
+            <a class="edit link mb-3"  href="/userEdit/name/<%= userView.userId %>" role="button" aria-expanded="false">
+                <span class="edit-button">Edit</span>
+            </a></p> 
+        </div>
+            
+        <div class="mb-3">                  
+            <% if (userView.email) { %>
+                    <p>email : <%= userView.email %></p>                               
+                 
+                <% } else { %>
+                    <a class="edit link mb-3"  href="/userEdit/email/<%= userView.userId %>" role="button" aria-expanded="false">
+                        <span class="edit-button">add email</span>
+                    </a>        
+            <% } %>         
+        </div>   
+
+        <div class="mb-3">
+            
+            <% if (userView.age) { %>
+                <p>age : <%= userView.age %>
+                    <a class="edit link mb-3"  href="/userEdit/age/<%= userView.userId %>" role="button" aria-expanded="false">
+                        <span class="edit-button"> Edit</span>
+                    </a></p> 
+                
+                <% } else { %>
+                    <a class="edit link mb-3"  href="/userEdit/age/<%= userView.userId %>" role="button" aria-expanded="false">
+                        <span class="edit-button"> add age</span>
+                    </a></p>
+                                 
+            <% } %>
+ 
+        </div>
+     
+        <div class="mb-3">
+            
+            <% if (userView.phoneNumber) { %>
+                <p>phoneNumber : <%= userView.phoneNumber %>
+                    <a class="edit link mb-3"  href="/userEdit/phoneNumber/<%= userView.userId %>" role="button" aria-expanded="false">
+                        <span class="edit-button"> Edit</span>
+                    </a></p>
+
+                    <% } else { %>
+                        <a class="edit link mb-3"  href="/userEdit/phoneNumber/<%= userView.userId %>" role="button" aria-expanded="false">
+                            <span class="edit-button"> add phoneNumber</span>
+                        </a></p>          
+            <% } %>
+             
+        </div>
+    </div> 
+
+   
+    <%- include('./partials/scripts') %>
+</body>
+</html>

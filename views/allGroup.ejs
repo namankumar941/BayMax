@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Home Page</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+
+    <div class="mb-3">
+        <a class="nav-link" href="/allGroup/create">Create Group</a>        
+     </div>
+
+     <% if (locals.allGroups) { %>
+        <% allGroups.forEach(allGroup => { %>
+            <div class="col">
+                <div class="card col" style="width: 18rem;">
+                    <a class="nav-link " href="/allGroup/<%= allGroup.groupId %>" role="button"  aria-expanded="false">
+                        <p> <%= allGroup.groupName %></p>
+                       
+                      </a>
+                                                               
+                  </div>
+                </div>
+         
+        <% }) %>     
+     <% } %>
+
+    <%- include('./partials/scripts') %>
+</body>
+</html>
