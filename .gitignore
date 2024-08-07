@@ -7,8 +7,7 @@
 
 /public
 /.env
-/reportFormat.js
+
 /reportResult.txt
 /finalReportResult.json
 /namanFinalReportResult.json
-/runAssistant.js
