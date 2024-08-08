@@ -11,7 +11,7 @@ const router = express.Router()
 
 //get all group as per login id
 router.get('/', async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     const allGroups = await allGroup.find({user_id : req.user._id},'groupId , groupName')
         
     return res.render('allGroup',{
@@ -22,9 +22,9 @@ router.get('/', async (req,res)=>{
 
 //get request to create Group
 router.get('/create', async (req,res)=>{
-    const editUser = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     return res.render('createGroup',{
-        user: editUser[0]
+        user: user[0]
     })
 })
 
@@ -47,7 +47,7 @@ router.post('/create', async (req,res)=>{
 
 //get request to display all user of one group
 router.get('/:groupId', async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
 
     const allUsers = await allGroup.find({groupId : req.params.groupId},'user_id , groupId , groupName').populate('user_id')
     
@@ -59,7 +59,7 @@ router.get('/:groupId', async (req,res)=>{
 
 //get request to add member in a group
 router.get('/add/:groupId', async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
    
     return res.render('addMember',{
         user: user[0],

@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
     <%- include('./partials/head') %>
-    <title>Home Page</title>
+    <title><%= allUsers[0].groupName %></title>
 </head>
 <body>
     <%- include('./partials/nav') %>
+
+    <div>
+        <p>Group:- <%= allUsers[0].groupName%></p>
+    </div>
 
     <div class="mb-3">
         <a class="nav-link" href="/allGroup/add/<%= allUsers[0].groupId %>">add member</a>        

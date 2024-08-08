@@ -23,8 +23,7 @@ const port= 8000
 //middleware to initialize passport and creating cookie
 app.use(cookieSession({
     keys: [secretKey], // key used to encrypt cookie
-    maxAge: 24*60*60*1000
-    
+    maxAge: 24*60*60*1000    
 }))
 app.use(passport.initialize())
 app.use(passport.session())
@@ -34,7 +33,6 @@ app.set("view engine", 'ejs')
 app.set('views',path.resolve('./views'))
 
 app.use(express.static(path.resolve("./public")))
-
 
 app.use(express.urlencoded({extended: false}))
 
@@ -47,8 +45,14 @@ app.use("/allGroup", allGroupRoute)
 
 //get request for main page
 app.get("/",async (req,res)=>{
+    if(!req.user){
+         return res.render('main')
+    }
     return res.render('main',{
-        user: req.user
+        user: {
+            profileImageURL: req.user.profileImageURL,
+            userId :  req.user.userId
+        }
     }) 
 })
 

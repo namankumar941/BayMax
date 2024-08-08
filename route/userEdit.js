@@ -11,7 +11,7 @@ const router = express.Router()
 
 //get request to edit user
 router.get('/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     const userEdit = await User.find({userId : req.params.userId})
     return res.render("userEdit",{
         user: user[0],
@@ -22,8 +22,8 @@ router.get('/:userId',async (req,res)=>{
 
 //view profile image
 router.get('/view/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
-    const userView = await User.find({userId : req.params.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
+    const userView = await User.find({userId : req.params.userId},'name , profileImageURL')
     return res.render("userView",{
         user: user[0],
         userView : userView[0]
@@ -34,7 +34,7 @@ router.get('/view/:userId',async (req,res)=>{
 
 //get request to edit profile image
 router.get('/image/:resourceId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},'userId , profileImageURL')
     const editUser = await User.find({resourceId : req.params.resourceId}, 'resourceId , profileImageURL , name')
 
     return res.render("userEditImage",{
@@ -87,8 +87,8 @@ router.post('/image/:resourceId',upload.single('profileImage'), async (req,res)=
 
 //get request to edit name
 router.get('/name/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
-    const editUser = await User.find({userId : req.params.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
+    const editUser = await User.find({userId : req.params.userId},' userId , profileImageURL')
     return res.render("userEditName",{
         user : user[0] ,
         editUser: editUser[0]
@@ -99,7 +99,7 @@ router.get('/name/:userId',async (req,res)=>{
 //post to change Name
 router.post('/name/:userId',async (req,res)=>{
     const body = req.body
-    const editUser = await User.findOneAndUpdate({ userId : req.params.userId},{
+    await User.findOneAndUpdate({ userId : req.params.userId},{
         name: body.name
     }) 
     
@@ -108,8 +108,8 @@ router.post('/name/:userId',async (req,res)=>{
 
 //get to edit age
 router.get('/age/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
-    const editUser = await User.find({userId : req.params.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
+    const editUser = await User.find({userId : req.params.userId},'name , userId , profileImageURL')
     
     return res.render("userEditAge",{
         user : user[0] ,
@@ -121,7 +121,7 @@ router.get('/age/:userId',async (req,res)=>{
 //post to edit age
 router.post('/age/:userId',async (req,res)=>{
     const body = req.body
-    const editUser = await User.findOneAndUpdate({ userId : req.params.userId},{
+    await User.findOneAndUpdate({ userId : req.params.userId},{
         age: body.age
     }) 
     
@@ -130,9 +130,9 @@ router.post('/age/:userId',async (req,res)=>{
 
 //get to edit phoneNumber
 router.get('/phoneNumber/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
-    const editUser = await User.find({userId : req.params.userId})
-    
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
+    const editUser = await User.find({userId : req.params.userId}, 'userId , profileImageURL , name')
+        
     return res.render("userEditPhoneNumber",{
         user : user[0] ,
         editUser: editUser[0]
@@ -143,7 +143,7 @@ router.get('/phoneNumber/:userId',async (req,res)=>{
 //post to edit phoneNumber
 router.post('/phoneNumber/:userId',async (req,res)=>{
     const body = req.body
-    const editUser = await User.findOneAndUpdate({ userId : req.params.userId},{
+    await User.findOneAndUpdate({ userId : req.params.userId},{
         phoneNumber: body.phoneNumber
     }) 
     
@@ -152,8 +152,8 @@ router.post('/phoneNumber/:userId',async (req,res)=>{
 
 //get request to add email
 router.get('/email/:userId',async (req,res)=>{
-    const user = await User.find({userId : req.user.userId})
-    const editUser = await User.find({userId : req.params.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
+    const editUser = await User.find({userId : req.params.userId}, ' userId , profileImageURL , name')
 
     return res.render("addEmail",{
         user : user[0] ,

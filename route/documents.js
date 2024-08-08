@@ -12,7 +12,7 @@ const router = express.Router()
 
 //get request to display all uploaded reports
 router.get("/:userId", async(req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     
     const doc = await Documents.find({userId : req.params.userId},'documentId , dateOfReport')
 
@@ -27,7 +27,7 @@ router.get("/:userId", async(req,res)=>{
 
 //get request to add report
 router.get("/add/:userId", async(req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     const docOwner = await User.find({userId : req.params.userId}, 'profileImageURL , name , userId, resourceId')
    
     return res.render('addDocuments',{

@@ -13,11 +13,9 @@ router.get('/login', (req,res)=>{
 
 //get request to user details
 router.get("/:userId", async(req,res)=>{
-    const user = await User.find({userId : req.user.userId})
+    const user = await User.find({userId : req.user.userId},' userId , profileImageURL')
     
     const userDetails = await User.find({userId : req.params.userId})
-
-    console.log(userDetails)
     
     return res.render('viewUserDetails',{
         user: user[0],        
