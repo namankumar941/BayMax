@@ -28,6 +28,7 @@ passport.use(new googleStrategy({
         
         const newUser= await User.create({
             userId : profile.id,
+            resourceId : uuid.v4() ,
             email : profile._json.email,
             name : profile._json.name,            
             profileImageURL : profile._json.picture,

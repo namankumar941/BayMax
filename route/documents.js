@@ -28,7 +28,7 @@ router.get("/:userId", async(req,res)=>{
 //get request to add report
 router.get("/add/:userId", async(req,res)=>{
     const user = await User.find({userId : req.user.userId})
-    const docOwner = await User.find({userId : req.params.userId}, 'profileImageURL , name , userId')
+    const docOwner = await User.find({userId : req.params.userId}, 'profileImageURL , name , userId, resourceId')
    
     return res.render('addDocuments',{
         user: user[0],
@@ -39,7 +39,7 @@ router.get("/add/:userId", async(req,res)=>{
 
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        const destPath = path.resolve(`./public/${req.params.userId}/reports`)
+        const destPath = path.resolve(`./public/${req.params.resourceId}/reports`)
 
         // Check if the directory exists at destination
         fs.access(destPath, fs.constants.F_OK, (err) => {
@@ -65,18 +65,19 @@ const storage = multer.diskStorage({
 const upload = multer({storage})
 
 //post request to add report
-router.post("/add/:userId", upload.single('Report') , async(req,res)=>{
-    const id = uuid.v4()
-        
+router.post("/add/:resourceId", upload.single('Report') , async(req,res)=>{
+    const user = await User.find({resourceId : req.params.resourceId})
+    
+            
     const newDoc = await Documents.create({
-        userId: req.params.userId,
-        docURL : `/${req.params.userId}/reports/${req.file.filename}`,
+        userId: user[0].userId,
+        docURL : `/${req.params.resourceId}/reports/${req.file.filename}`,
         dateOfReport: req.body.dateOfReport,
-        documentId : id,
+        documentId : uuid.v4(),
     })
-    callOpenAI(`./public/${req.params.userId}/reports/${req.file.filename}`)
+    callOpenAI(`./public/${req.params.resourceId}/reports/${req.file.filename}`)
 
-    return res.redirect(`/documents/${req.params.userId}`)
+    return res.redirect(`/documents/${user[0].userId}`)
     
 })
 

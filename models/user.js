@@ -1,12 +1,9 @@
 const mongoose = require ("mongoose")
 
 const userSchema = new mongoose.Schema({
-    userId : {
-        type: String
-    },
-    email : {
-        type: String,
-    },
+    userId : { type: String },
+    resourceId: { type : String } ,
+    email : { type: String },
     isEmailVerified : {
         type: Boolean,
         default: false

@@ -33,9 +33,9 @@ router.get('/view/:userId',async (req,res)=>{
 
 
 //get request to edit profile image
-router.get('/image/:userId',async (req,res)=>{
+router.get('/image/:resourceId',async (req,res)=>{
     const user = await User.find({userId : req.user.userId})
-    const editUser = await User.find({userId : req.params.userId})
+    const editUser = await User.find({resourceId : req.params.resourceId}, 'resourceId , profileImageURL , name')
 
     return res.render("userEditImage",{
         user : user[0] ,
@@ -48,7 +48,7 @@ router.get('/image/:userId',async (req,res)=>{
 const storage = multer.diskStorage({
 
     destination: function (req, file, callback) {
-        const destPath = path.resolve(`./public/${req.params.userId}/profile`);
+        const destPath = path.resolve(`./public/${req.params.resourceId}/profile`);
     
         // Check if the directory exists at destination
         fs.access(destPath, fs.constants.F_OK, (err) => {
@@ -76,12 +76,12 @@ const upload = multer({storage})
 
 
 //post to change profile image
-router.post('/image/:userId',upload.single('profileImage'), async (req,res)=>{
+router.post('/image/:resourceId',upload.single('profileImage'), async (req,res)=>{
     
-    const editUser = await User.findOneAndUpdate({userId : req.params.userId },{
-        profileImageURL: `/${req.params.userId}/profile/${req.file.filename}`
+    const editUser = await User.findOneAndUpdate({resourceId : req.params.resourceId },{
+        profileImageURL: `/${req.params.resourceId}/profile/${req.file.filename}`
     })    
-    res.redirect(`/userEdit/${req.params.userId}`)
+    res.redirect(`/userEdit/${editUser.userId}`)
 })
 
 

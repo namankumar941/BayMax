@@ -4,6 +4,7 @@ const uuid = require ("uuid")
 const User = require("../models/user")
 const allGroup = require("../models/allGroup")
 const callOpenAI = require("../runAssistant")
+const user = require("../models/user")
 
 
 const router = express.Router()
@@ -70,10 +71,9 @@ router.get('/add/:groupId', async (req,res)=>{
 //post request to add member in a group
 router.post('/add/:groupId', async (req,res)=>{
     const body = req.body 
-    const id = uuid.v4()
-
     const newUser = await User.create({
-        userId: id,
+        userId: uuid.v4(),
+        resourceId : uuid.v4(),
         name : body.name,
         age: body.age,
         

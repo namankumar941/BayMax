@@ -3,6 +3,7 @@ const OpenAI = require("openai");
 
 const reportModel = require("./reportFormat")
 const fs = require('fs')
+const pdf = require('pdf-parse');
 
 async function callOpenAI(path){
 
@@ -14,7 +15,7 @@ async function callOpenAI(path){
         apiKey: process.env.API_KEY
     }        
     );
-      
+      /*
     // Create a vector store including our file.
     let vectorStore = await openai.beta.vectorStores.create({
         name: "Medical Report",
@@ -49,11 +50,11 @@ console.log("vectorStore.id",vectorStore.id,"file.id",file.id)
         content:
           `1 retrieve text from attached file
           `,
-        /*
+        
         content:
           `1 Retrieve text from attached file and return json file
           2 give only test name and test result value with its unit of measurement 
-          3 i only want retrival data nothing should be added by you`,*/
+          3 i only want retrival data nothing should be added by you`,
 
         // Attach the new file to the message.
         attachments: [{ file_id: file.id, tools: [{ type: "file_search" }] }],
@@ -91,7 +92,7 @@ console.log("vectorStore.id",vectorStore.id,"file.id",file.id)
       }
       console.log(citations.join("\n"))
 
-     /* //modify data according to our model and save it to our database
+      //modify data according to our model and save it to our database
       try {            
         const response = await openai.chat.completions.create({
             messages: [{ role: "system", 
@@ -125,7 +126,7 @@ console.log("vectorStore.id",vectorStore.id,"file.id",file.id)
 
     } catch (e) {
         console.error(e)
-    }*/
+    }
 
 
     //save required message in a txt file      
@@ -138,7 +139,107 @@ console.log("vectorStore.id",vectorStore.id,"file.id",file.id)
 
     
   
+    let dataBuffer = fs.readFileSync(path);
+ 
+pdf(dataBuffer).then(function(data) {
+  console.log(data.metadata);
+  fs.writeFile("./ReportResult.txt",data.text,(err)=>{})
+    
+        
+}); */
 
+//extract data from uploaded pdf report
+let dataBuffer = fs.readFileSync(path);
+
+pdf(dataBuffer).then(async function(data) {
+  console.log(data.text);
+  
+   try {    
+    //extract required data from file        
+    const response1 = await openai.chat.completions.create({
+        messages: [{ role: "system", 
+            content: `1 here is my file content:-
+             ${data.text}
+            2 this file contain medical test report 
+            3 extract all medical test with their values , unit of measurement and their reference value
+            ` 
+        }],
+        model: "gpt-4o",
+        
+    });   
+
+    fs.writeFile("./response1.txt",response1.choices[0].message.content,(err)=>{})
+
+    const response2 = await openai.chat.completions.create({
+      messages: [{ role: "system", 
+          content: `1 here is my file content:-
+           ${response1.choices[0].message.content}
+          2 this file contain medical test report 
+          3 convert this into a json object
+          4 new json file should strictly follow format for example
+          {[
+          {
+            testName :
+            value : 
+            unit :
+            refValue :
+          },
+          {
+            testName :
+            value : 
+            unit :
+            refValue :
+          },
+          ]}
+          ` 
+      }],
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+      
+  });   
+
+  fs.writeFile("./response2.txt",response2.choices[0].message.content,(err)=>{})
+
+    //modify data according to our model and save it to our database
+    const response = await openai.chat.completions.create({
+      messages: [{ role: "system", 
+          content: `1 here is my json file content:-
+           ${response2.choices[0].message.content}
+          2 here is my model (array of biological terms):-
+            ${reportModel} 
+          3 add new key to json object as originalName to my json file content
+          4 originalName take its value from my model array which has similar biological meaning to testName value in my json file content
+          4 return me the changed my file content and new json file should strictly follow format for example
+          {
+          myTest : [
+          {
+          testName :
+          originalName:
+            value : 
+            unit :
+            refValue :
+          },
+          {
+          testName :
+          originalName:
+            value : 
+            unit :
+            refValue :
+          },
+          ]}` 
+      }],
+      model: "gpt-4o",
+      response_format: { type: "json_object" },
+  });
+
+    //create a json file of final result we received in our database 
+    fs.writeFile("./finalReportResult.json",response.choices[0].message.content,(err)=>{})
+
+} catch (e) {
+    console.error(e)
+}
+  
+});
 
 }
 
