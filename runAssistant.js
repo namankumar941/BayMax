@@ -112,88 +112,39 @@ async function chatGPT(fileText, content, isJsonOutput) {
 }
 
 //function that will be called in my document route to interact with openAi api
-async function callOpenAI(inputFilePath, outputFilePath) {
+async function callOpenAI(inputFilePath, outputFilePath, userId, dateOfReport) {
   console.log("enter");
   const data = await dataExtraction(inputFilePath);
-console.log(`response1start
-                 11`)
+  console.log(`response 1 start`);
 
   const response1 = await chatGPT(data.text, response1Message, false);
-  fs.writeFileSync("./response1.txt", response1.choices[0].message.content);
 
-  console.log(`response2start
-    22`)
-  
-  const response2 = await chatGPT(response1.choices[0].message.content, response2Message, true);
-  fs.writeFileSync("./response2.json", response2.choices[0].message.content);
+  console.log(`response 2 start`);
 
-  console.log(`response3start
-    33`)
+  const response2 = await chatGPT(
+    response1.choices[0].message.content,
+    response2Message,
+    true
+  );
 
-  const response3 = await chatGPT(JSON.stringify(response2.choices[0].message.content), response3Message, true);
-  fs.writeFileSync("./response3.json", response3.choices[0].message.content);
+  console.log(`response 3 start`);
 
-  console.log(`response final start
-    44`)
+  const response3 = await chatGPT(
+    JSON.stringify(response2.choices[0].message.content),
+    response3Message,
+    true
+  );
 
-  const finalResponse = await chatGPT(JSON.stringify(response3.choices[0].message.content), finalResponseMessage, true);
+  console.log(`response final start`);
+
+  const finalResponse = await chatGPT(
+    JSON.stringify(response3.choices[0].message.content),
+    finalResponseMessage,
+    true
+  );
   fs.writeFileSync(outputFilePath, finalResponse.choices[0].message.content);
 
-  addDetailsToDB(finalResponse.choices[0].message.content)
-
-  /*
-  //extract data from uploaded pdf report
-  dataExtraction(inputFilePath).then((data) => {
-    //extract required data from file
-    chatGPT(data.text, response1Message, false).then((response1) => {
-      fs.writeFile(
-        "./response1.txt",
-        response1.choices[0].message.content,
-        (err) => {}
-      );
-      //arrange data in specific order and get json file format
-      chatGPT(
-        response1.choices[0].message.content,
-        response2Message,
-        true
-      ).then((response2) => {
-        fs.writeFile(
-          "./response2.json",
-          response2.choices[0].message.content,
-          (err) => {}
-        );
-        //rearrange data as required
-        chatGPT(
-          JSON.stringify(response2.choices[0].message.content),
-          response3Message,
-          true
-        ).then((response3) => {
-          fs.writeFile(
-            "./response3.json",
-            response3.choices[0].message.content,
-            (err) => {}
-          );
-          //change terminologies according to our database
-          chatGPT(
-            JSON.stringify(response3.choices[0].message.content),
-            finalResponseMessage,
-            true
-          ).then((finalResponse) => {
-            console.log("final");
-            fs.writeFile(
-              outputFilePath,
-              finalResponse.choices[0].message.content,
-              (err) => {}
-            );
-            addDetailsToDB(
-              JSON.stringify(finalResponse.choices[0].message.content)
-            );
-          });
-        });
-      });
-    });
-  });
-  */
+  addDetailsToDB(outputFilePath, userId, dateOfReport);
 }
 
 module.exports = callOpenAI;

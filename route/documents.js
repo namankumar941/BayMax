@@ -96,7 +96,9 @@ router.post("/add/:resourceId", upload.single("Report"), async (req, res) => {
 
   callOpenAI(
     `./public/${req.params.resourceId}/reports/${req.file.filename}`,
-    outputFilePath
+    outputFilePath,
+    user[0].userId,
+    req.body.dateOfReport
   );
   return res.redirect(`/documents/${user[0].userId}`);
 });

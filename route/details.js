@@ -45,8 +45,6 @@ router.get("/:combinedId", async (req, res) => {
     "details , dateOfReport"
   );
 
-  console.log(details);
-
   return res.render("details", {
     user: user[0],
     details: details,
