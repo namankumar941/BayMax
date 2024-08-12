@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Details</title>
+</head>
+<body>
+    <%- include('./partials/nav') %>
+     <% if (locals.detailsHeads) { %>
+        <% detailsHeads.forEach(detailsHead => { %>
+            <div class="col">
+                <div class="card col" style="width: 18rem;">
+                    <a class="nav-link " href="/details/<%= detailsHead.detailsHeadId %>@break$<%=detailsHead.userId %>" role="button"  aria-expanded="false">
+                        <p> <%= detailsHead.detailsHeadName %></p>
+                       
+                      </a>
+                                                               
+                  </div>
+                </div>
+         
+        <% }) %>     
+     <% } %>
+
+    <%- include('./partials/scripts') %>
+</body>
+</html>

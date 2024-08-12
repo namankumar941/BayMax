@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabular Details</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Data Table</h2>
+    <table>
+        <thead>
+            <tr>                
+                <th>testName</th>
+                <th>dateOfReport</th>
+                <th>Result</th>
+                <th>unit</th>
+                <th>reference Value</th>                
+            </tr>
+        </thead>
+        <% details.forEach(detail => { %>
+            <tbody>
+                <tr>
+                    <td><%=  detail.details.testName %></td>
+                    <td><%= detail.dateOfReport %></td>
+                    <td><%= detail.details.value %></td>
+                    <td> <%= detail.details.unit %></td>
+                    <td><%= detail.details.refValue %></td>
+                </tr>
+                
+            </tbody>
+            
+         
+        <% }) %>  
+        
+    </table>
+</body>
+</html>

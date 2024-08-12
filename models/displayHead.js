@@ -1,26 +1,22 @@
 const mongoose = require("mongoose");
 
-const documentSchema = new mongoose.Schema(
+const displayHeadSchema = new mongoose.Schema(
   {
-    documentId: {
+    displayHeadId: {
       type: String,
       unique: true,
     },
     userId: {
       type: String,
     },
-    docURL: {
+    displayHeadName: {
       type: String,
       required: true,
-    },
-
-    dateOfReport: {
-      type: String,
     },
   },
   { timestamps: true }
 );
 
-const document = mongoose.model("document", documentSchema);
+const displayHead = mongoose.model("displayHead", displayHeadSchema);
 
-module.exports = document;
+module.exports = displayHead;

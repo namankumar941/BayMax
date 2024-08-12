@@ -8,6 +8,6 @@
 /public
 /.env
 
+/addDetailsToDB.js
 
-/finalReportResult.json
 

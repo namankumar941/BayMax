@@ -19,7 +19,13 @@
           <a class="nav-link active" aria-current="page" href="/">Home</a>          
         </div> 
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="/allGroup">Groups</a>          
+          <a class="nav-link active" aria-current="page" href="/documents/<%= user.userId %>">My Reports</a>          
+        </div> 
+        <div class="navbar-nav">
+          <a class="nav-link active" aria-current="page" href="/displayHead/<%= user.userId %>"> Report Details</a>          
+        </div> 
+        <div class="navbar-nav">
+          <a class="nav-link active" aria-current="page" href="/allGroup">  Groups  </a>          
         </div> 
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
