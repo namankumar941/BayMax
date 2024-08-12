@@ -5,69 +5,88 @@ const express = require("express");
 const { clientId, clientSecret } = require("../secretData");
 const uuid = require("uuid");
 
-//serialize and deserialize User
-passport.serializeUser((user, done) => {
-  done(null, user.userId);
-});
-passport.deserializeUser((userId, done) => {
-  User.find({ userId: userId }).then((user) => {
-    done(null, user[0]);
-  });
-});
+//----------------------------------------------class----------------------------------------------
 
-//creating user using google strategy
-passport.use(
-  new googleStrategy(
-    {
-      clientID: clientId,
-      clientSecret: clientSecret,
-      callbackURL: "/auth/google/redirect",
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      const currentUser = await User.find(
-        { email: profile._json.email },
-        "userId"
-      );
+class Authentication {
+  constructor() {
+    this.initPassport();
+  }
+  // Initialize passport configuration
+  initPassport() {
+    // Serialize user information into the session
+    passport.serializeUser((user, done) => {
+      done(null, user.userId);
+    });
+    //deserialize User
+    passport.deserializeUser((userId, done) => {
+      User.find({ userId: userId }).then((user) => {
+        done(null, user[0]);
+      });
+    });
 
-      if (!currentUser[0]) {
-        const newUser = await User.create({
-          userId: profile.id,
-          resourceId: uuid.v4(),
-          email: profile._json.email,
-          name: profile._json.name,
-          profileImageURL: profile._json.picture,
-          isEmailVerified: true,
-        });
+    //creating user using google strategy
+    passport.use(
+      new googleStrategy(
+        {
+          clientID: clientId,
+          clientSecret: clientSecret,
+          callbackURL: "/auth/google/redirect",
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          const currentUser = await User.find(
+            { email: profile._json.email },
+            "userId"
+          );
+          console.log(currentUser);
 
-        done(null, { userId: newUser.userId });
-      } else if (!currentUser[0].isEmailVerified) {
-        await User.findOneAndUpdate(
-          { email: profile._json.email },
-          {
-            isEmailVerified: true,
+          if (!currentUser[0]) {
+            const newUser = await User.create({
+              userId: profile.id,
+              resourceId: uuid.v4(),
+              email: profile._json.email,
+              name: profile._json.name,
+              profileImageURL: profile._json.picture,
+              isEmailVerified: true,
+            });
+
+            return done(null, { userId: newUser.userId });
+          } else {
+            await User.findOneAndUpdate(
+              { email: profile._json.email },
+              {
+                isEmailVerified: true,
+              }
+            );
+            done(null, currentUser[0]);
           }
-        );
-        done(null, currentUser[0]);
-      } else {
-        done(null, currentUser[0]);
+        }
+      )
+    );
+  }
+
+  //----------------------------------------------routes----------------------------------------------
+
+  // Set up routes for authentication
+  setupRoutes() {
+    const router = express.Router();
+
+    // Route to initiate Google authentication
+    router.get(
+      "/google",
+      passport.authenticate("google", { scope: ["email", "profile"] })
+    );
+
+    // Route to handle Google OAuth callback
+    router.get(
+      "/google/redirect",
+      passport.authenticate("google", { failureRedirect: "/" }),
+      (req, res) => {
+        res.redirect("/");
       }
-    }
-  )
-);
+    );
 
-const router = express.Router();
+    return router;
+  }
+}
 
-//get request to get auth code from google
-router.get(
-  "/google",
-  passport.authenticate("google", {
-    scope: ["email", "profile"],
-  })
-);
-
-//get request to get user info from google
-router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
-  res.redirect("/");
-});
-
-module.exports = router;
+module.exports = Authentication;

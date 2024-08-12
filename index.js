@@ -8,7 +8,7 @@ const { secretKey } = require("./secretData");
 
 // import all route
 const userRoute = require("./route/user");
-const authRoute = require("./route/auth");
+const Authentication = require("./route/auth");
 const userEditRoute = require("./route/userEdit");
 const documentsRoute = require("./route/documents");
 const allGroupRoute = require("./route/allGroup");
@@ -28,6 +28,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Create an instance of the Authentication class
+const auth = new Authentication();
+
 // set view engine as ejs and set path location of ejs file
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
@@ -35,33 +38,42 @@ app.set("views", path.resolve("./views"));
 app.use(express.static(path.resolve("./public")));
 app.use(express.urlencoded({ extended: false }));
 
-//middleware to redirect url to route
-app.use("/user", userRoute);
-app.use("/auth", authRoute);
-app.use("/userEdit", userEditRoute);
-app.use("/documents", documentsRoute);
-app.use("/allGroup", allGroupRoute);
-app.use("/details", detailsRoute);
-app.use("/displayHead", displayHeadRoute);
+//----------------------------------------------class----------------------------------------------
+
+class MainPage {
+  async viewMainPage(req, res) {
+    if (!req.user) {
+      return res.render("main");
+    }
+    return res.render("main", {
+      user: {
+        profileImageURL: req.user.profileImageURL,
+        userId: req.user.userId,
+      },
+    });
+  }
+}
+//created class instance
+const mainPage = new MainPage();
+
+//----------------------------------------------routes----------------------------------------------
 
 //get request for main page
-app.get("/", async (req, res) => {
-  if (!req.user) {
-    return res.render("main");
-  }
-  return res.render("main", {
-    user: {
-      profileImageURL: req.user.profileImageURL,
-      userId: req.user.userId,
-    },
-  });
-});
-
+app.get("/", mainPage.viewMainPage.bind(mainPage));
 // get request to log out user
 app.get("/logout", async (req, res) => {
   req.logout();
   return res.render("main");
 });
+//middleware to redirect url to route
+app.use("/user", userRoute);
+app.use("/userEdit", userEditRoute);
+app.use("/documents", documentsRoute);
+app.use("/allGroup", allGroupRoute);
+app.use("/details", detailsRoute);
+app.use("/displayHead", displayHeadRoute);
+// Set up authentication routes
+app.use("/auth", auth.setupRoutes());
 
 // connect mongo Db
 mongoose

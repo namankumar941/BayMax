@@ -3,13 +3,7 @@ const OpenAI = require("openai");
 const TerminologyArray = require("./TerminologyArray");
 const fs = require("fs");
 const pdf = require("pdf-parse");
-const addDetailsToDB = require("./addDetailsToDB");
-
-//create open ai connection
-const secretKey = process.env.API_KEY;
-const openai = new OpenAI({
-  apiKey: process.env.API_KEY,
-});
+const AddDetailsToDB = require("./addDetailsToDB");
 
 //response message that have to be sent to openAI to rearrange our data and get json file
 const response1Message = `above is my file content
@@ -77,74 +71,88 @@ const finalResponseMessage = `above is my json file content
           },
           ]}`;
 
-//function to  extract data from uploaded pdf report
-async function dataExtraction(filePath) {
-  let dataBuffer = fs.readFileSync(filePath);
-  const data = await pdf(dataBuffer);
-  return data;
-}
+//----------------------------------------------class----------------------------------------------
 
-//function to extract required data from file and rearrange using openai  api
-async function chatGPT(fileText, content, isJsonOutput) {
-  if (isJsonOutput) {
+class ChatGpt {
+  //function to  extract data from uploaded pdf report
+  async dataExtraction(filePath) {
+    let dataBuffer = fs.readFileSync(filePath);
+    const data = await pdf(dataBuffer);
+    return data;
+  }
+
+  //function to extract required data from file and rearrange using openai  api
+  async chatGPT(fileText, content, isJsonOutput) {
+    //create open ai connection
+    const openai = new OpenAI({
+      apiKey: process.env.API_KEY,
+    });
+    if (isJsonOutput) {
+      return await openai.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: `1. ${fileText} 
+          ${content}`,
+          },
+        ],
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+      });
+    }
     return await openai.chat.completions.create({
       messages: [
         {
           role: "system",
           content: `1. ${fileText} 
-          ${content}`,
+        ${content}`,
         },
       ],
       model: "gpt-4o",
-      response_format: { type: "json_object" },
     });
   }
-  return await openai.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: `1. ${fileText} 
-        ${content}`,
-      },
-    ],
-    model: "gpt-4o",
-  });
+}
+class ApiAssistant {
+  //function that will be called in my document route to interact with openAi api
+  async callOpenAI(inputFilePath, outputFilePath, userId, dateOfReport) {
+
+    const chatGpt = new ChatGpt();
+    const addDetailsToDB = new AddDetailsToDB();
+    
+
+    console.log("enter");
+    const data = await chatGpt.dataExtraction(inputFilePath);
+    console.log(`response 1 start`);
+
+    const response1 = await chatGpt.chatGPT(data.text, response1Message, false);
+
+    console.log(`response 2 start`);
+
+    const response2 = await chatGpt.chatGPT(
+      response1.choices[0].message.content,
+      response2Message,
+      true
+    );
+
+    console.log(`response 3 start`);
+
+    const response3 = await chatGpt.chatGPT(
+      JSON.stringify(response2.choices[0].message.content),
+      response3Message,
+      true
+    );
+
+    console.log(`response final start`);
+
+    const finalResponse = await chatGpt.chatGPT(
+      JSON.stringify(response3.choices[0].message.content),
+      finalResponseMessage,
+      true
+    );
+    fs.writeFileSync(outputFilePath, finalResponse.choices[0].message.content);
+
+    addDetailsToDB.addDetails(outputFilePath, userId, dateOfReport);
+  }
 }
 
-//function that will be called in my document route to interact with openAi api
-async function callOpenAI(inputFilePath, outputFilePath, userId, dateOfReport) {
-  console.log("enter");
-  const data = await dataExtraction(inputFilePath);
-  console.log(`response 1 start`);
-
-  const response1 = await chatGPT(data.text, response1Message, false);
-
-  console.log(`response 2 start`);
-
-  const response2 = await chatGPT(
-    response1.choices[0].message.content,
-    response2Message,
-    true
-  );
-
-  console.log(`response 3 start`);
-
-  const response3 = await chatGPT(
-    JSON.stringify(response2.choices[0].message.content),
-    response3Message,
-    true
-  );
-
-  console.log(`response final start`);
-
-  const finalResponse = await chatGPT(
-    JSON.stringify(response3.choices[0].message.content),
-    finalResponseMessage,
-    true
-  );
-  fs.writeFileSync(outputFilePath, finalResponse.choices[0].message.content);
-
-  addDetailsToDB(outputFilePath, userId, dateOfReport);
-}
-
-module.exports = callOpenAI;
+module.exports = ApiAssistant;
